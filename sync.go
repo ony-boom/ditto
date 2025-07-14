@@ -2,6 +2,7 @@ package main
 
 import (
 	"fmt"
+	"log"
 	"slices"
 )
 
@@ -26,6 +27,13 @@ func Sync(opts SyncOptions) error {
 	if err != nil {
 		return fmt.Errorf("failed to list installed packages: %w", err)
 	}
+
+	def, err := packageDef.LoadAllDefFiles()
+	if err != nil {
+		log.Fatalf("failed to load package definitions: %v", err)
+	}
+
+	fmt.Printf("Loaded package definitions: %v\n", def)
 
 	diff := diff(desiredPackages, installedPackages)
 

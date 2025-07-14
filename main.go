@@ -8,8 +8,9 @@ import (
 )
 
 var (
-	cfg    = LoadConfig()
-	pacman = NewPacman(cfg)
+	cfg        = LoadConfig()
+	pacman     = NewPacman(cfg)
+	packageDef = NewPackageDef()
 )
 
 func main() {
