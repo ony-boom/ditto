@@ -23,6 +23,10 @@
             vendorHash = "sha256-AM4ZdnMRSBDEqqMDFtIkMAkaaSWkaEjZdV6mFsSH9y8=";
           };
         };
+
+        overlays.default = final: prev: {
+          ditto = self.packages.${prev.system}.default;
+        };
       }
     );
 }
