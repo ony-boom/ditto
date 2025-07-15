@@ -39,13 +39,6 @@ var (
 	}
 )
 
-func ptrValueOrDefault[T any](ptr *T, defaultVal T) T {
-	if ptr != nil {
-		return *ptr
-	}
-	return defaultVal
-}
-
 func getConfigPath() (string, error) {
 	return xdg.ConfigFile("ditto/config.toml")
 }

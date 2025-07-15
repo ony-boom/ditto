@@ -21,7 +21,10 @@ func main() {
 by using a simple declarative config file.
 
 You define the packages you want, and Ditto installs them — optionally removing everything else
-if you enable strict mode. It also supports dry runs, so you can preview changes safely.`,
+if you enable strict mode. It also supports dry runs, so you can preview changes safely.
+
+By the way, just running 'ditto' will create the config file at <XDG_CONFIG_HOME>/ditto
+`,
 		Commands: []*cli.Command{
 			{
 				Name:    "sync",
