@@ -9,15 +9,19 @@ import (
 )
 
 type ConfigFile struct {
-	NoConfirm       *bool     `toml:"noConfirm"`
-	AurHelper       *string   `toml:"aurHelper"`
-	UninstallIgnore *[]string `toml:"uninstallIgnore"`
+	NoConfirm          *bool     `toml:"noConfirm"`
+	AurHelper          *string   `toml:"aurHelper"`
+	ExtraInstallArgs   *[]string `toml:"extraInstallArgs"`
+	ExtraUninstallArgs *[]string `toml:"extraUninstallArgs"`
+	UninstallIgnore    *[]string `toml:"uninstallIgnore"`
 }
 
 type Config struct {
-	NoConfirm       bool     `toml:"noConfirm"`
-	AurHelper       string   `toml:"aurHelper"`
-	UninstallIgnore []string `toml:"uninstallIgnore"`
+	NoConfirm          bool     `toml:"noConfirm"`
+	AurHelper          string   `toml:"aurHelper"`
+	ExtraInstallArgs   []string `toml:"extraInstallArgs"`
+	ExtraUninstallArgs []string `toml:"extraUninstallArgs"`
+	UninstallIgnore    []string `toml:"uninstallIgnore"`
 }
 
 const (
@@ -50,9 +54,11 @@ func parseConfigFile(data []byte) (*ConfigFile, error) {
 
 func (cf *ConfigFile) toConfig() *Config {
 	return &Config{
-		NoConfirm:       ptrValueOrDefault(cf.NoConfirm, defaultConfig.NoConfirm),
-		AurHelper:       ptrValueOrDefault(cf.AurHelper, defaultConfig.AurHelper),
-		UninstallIgnore: ptrValueOrDefault(cf.UninstallIgnore, defaultConfig.UninstallIgnore),
+		NoConfirm:          ptrValueOrDefault(cf.NoConfirm, defaultConfig.NoConfirm),
+		AurHelper:          ptrValueOrDefault(cf.AurHelper, defaultConfig.AurHelper),
+		UninstallIgnore:    ptrValueOrDefault(cf.UninstallIgnore, defaultConfig.UninstallIgnore),
+		ExtraInstallArgs:   ptrValueOrDefault(cf.ExtraInstallArgs, []string{}),
+		ExtraUninstallArgs: ptrValueOrDefault(cf.ExtraUninstallArgs, []string{}),
 	}
 }
 

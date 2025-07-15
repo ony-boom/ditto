@@ -63,6 +63,8 @@ func (p *Pacman) isAurHelper() bool {
 func (p *Pacman) Install(pkgs []string) error {
 	args := []string{"-S"}
 
+	args = append(args, cfg.ExtraInstallArgs...)
+
 	if cfg.NoConfirm {
 		args = append(args, "--noconfirm")
 	}
@@ -85,6 +87,7 @@ func (p *Pacman) Install(pkgs []string) error {
 func (p *Pacman) Remove(pkgs []string) error {
 	args := []string{"-R"}
 
+	args = append(args, cfg.ExtraUninstallArgs...)
 	args = append(args, pkgs...)
 
 	cmd := p.exec(args)

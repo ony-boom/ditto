@@ -158,7 +158,6 @@ func printPackageChanges(diff PackageDiff, strict bool) {
 	}
 
 	if len(diff.ToAdd) == 0 && (!strict || len(diff.ToRemove) == 0) {
-		fmt.Println("No package changes needed")
 		return
 	}
 
