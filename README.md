@@ -5,3 +5,11 @@ Define all your `pacman` packages in a clean TOML file and sync your system with
 **Why not nixos ?**
 
 _
+
+## Install 
+
+Through `go install`:
+
+```sh
+go install github.com/ony-boom/ditto@latest
+```
