@@ -1,7 +1,8 @@
-name: "cachix cache"
+name: Push nix build cache
 on:
-  pull_request:
   push:
+    tags:
+      - 'v*'
 jobs:
   cache:
     runs-on: ubuntu-latest
