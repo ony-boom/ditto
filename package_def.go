@@ -1,25 +1,20 @@
 package main
 
 import (
+	"bufio"
 	"io/fs"
 	"log"
 	"os"
 	"path/filepath"
 	"strings"
-
-	"github.com/pelletier/go-toml/v2"
 )
 
 type PackageDef struct {
 	path string
 }
 
-type DefinitionFile struct {
-	Packages *[]string `toml:"packages"`
-}
-
 type Definition struct {
-	Packages []string `toml:"packages"`
+	Packages []string
 	Host     *string
 }
 
@@ -44,7 +39,7 @@ func (pd *PackageDef) LoadAllDefinitions() ([]Definition, error) {
 			return err
 		}
 
-		if d.Type().IsRegular() && strings.HasSuffix(path, ".toml") {
+		if d.Type().IsRegular() && strings.HasSuffix(path, ".def") {
 			def, err := pd.parseDefFile(path)
 			if err != nil {
 				return err
@@ -58,22 +53,32 @@ func (pd *PackageDef) LoadAllDefinitions() ([]Definition, error) {
 }
 
 func (pd *PackageDef) parseDefFile(file string) (Definition, error) {
-	data, err := os.ReadFile(file)
+	f, err := os.Open(file)
 	if err != nil {
 		return Definition{}, err
 	}
+	defer f.Close()
 
-	var defFile DefinitionFile
-	if err := toml.Unmarshal(data, &defFile); err != nil {
+	var pkgs []string
+
+	scanner := bufio.NewScanner(f)
+	for scanner.Scan() {
+		line := strings.TrimSpace(scanner.Text())
+		if line == "" || strings.HasPrefix(line, "#") {
+			continue
+		}
+		pkgs = append(pkgs, line)
+	}
+
+	if err := scanner.Err(); err != nil {
 		return Definition{}, err
 	}
 
-	if defFile.Packages == nil {
-		log.Printf("warning: 'packages' field missing in %s", file)
+	if len(pkgs) == 0 {
+		log.Printf("warning: no packages defined in %s", file)
 	}
 
 	var host *string
-
 	relPath, err := filepath.Rel(pd.path, file)
 	if err != nil {
 		return Definition{}, err
@@ -82,7 +87,7 @@ func (pd *PackageDef) parseDefFile(file string) (Definition, error) {
 	parts := strings.Split(relPath, string(os.PathSeparator))
 	if len(parts) >= 2 && parts[0] == "hosts" {
 		if len(parts) == 2 {
-			hostVal := strings.TrimSuffix(parts[1], ".toml")
+			hostVal := strings.TrimSuffix(parts[1], ".def")
 			host = &hostVal
 		} else if len(parts) > 2 {
 			hostVal := parts[1]
@@ -91,7 +96,7 @@ func (pd *PackageDef) parseDefFile(file string) (Definition, error) {
 	}
 
 	return Definition{
-		Packages: ptrValueOrDefault(defFile.Packages, []string{}),
+		Packages: pkgs,
 		Host:     host,
 	}, nil
 }
