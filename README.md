@@ -8,8 +8,6 @@ Define all your `pacman` packages in simple `.def` files and sync your system wi
 
 Because you just want *one* thing: to declaratively manage packages without rewriting your OS.
 
----
-
 ## Installation
 
 Install via `go install`:
@@ -17,8 +15,6 @@ Install via `go install`:
 ```sh
 go install github.com/ony-boom/ditto@latest
 ```
-
----
 
 ## Usage
 
@@ -40,7 +36,6 @@ For machine-specific packages, create files under:
 
 You can also organize them into subdirectories (e.g. `hosts/laptop/gaming.def`).
 
----
 
 ## Syncing
 
@@ -63,14 +58,12 @@ You can preview changes with:
 ditto sync --dry-run
 ```
 
----
 
 ## Notes
 
 - The config file is automatically created at `~/.config/ditto/config.toml` on first run.
 - You can specify an AUR helper and other options in the config.
 
----
 
 ## Example `.def` file
 
