@@ -19,7 +19,7 @@
           default = pkgs.buildGoModule {
             src = self;
             pname = "ditto";
-            version = "0.1.0";
+            version = "0.2.0";
             vendorHash = "sha256-AM4ZdnMRSBDEqqMDFtIkMAkaaSWkaEjZdV6mFsSH9y8=";
           };
         };
