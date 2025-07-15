@@ -1,9 +1,11 @@
 package main
 
 import (
+	"bytes"
 	"fmt"
 	"log"
 	"os"
+	"os/exec"
 	"slices"
 	"sort"
 	"strings"
@@ -107,6 +109,10 @@ func calculateDiff(desired, installed []string) PackageDiff {
 }
 
 func printPackageChanges(diff PackageDiff, strict bool) {
+	if len(diff.ToAdd) == 0 && (!strict || len(diff.ToRemove) == 0) {
+		return
+	}
+
 	white := lipgloss.Color("15")
 	green := lipgloss.Color("10")
 	red := lipgloss.Color("9")
@@ -157,13 +163,19 @@ func printPackageChanges(diff PackageDiff, strict bool) {
 		t.Row(addPkg, removePkg)
 	}
 
-	if len(diff.ToAdd) == 0 && (!strict || len(diff.ToRemove) == 0) {
-		return
-	}
+	var out bytes.Buffer
+	out.WriteString("\n")
+	out.WriteString(t.String())
+	out.WriteString("\n")
 
-	fmt.Println()
-	fmt.Println(t)
-	fmt.Println()
+	cmd := exec.Command("less", "-FRX")
+	cmd.Stdin = &out
+	cmd.Stdout = os.Stdout
+	cmd.Stderr = os.Stderr
+
+	if err := cmd.Run(); err != nil {
+		fmt.Print(out.String())
+	}
 }
 
 func applyPackageChanges(diff PackageDiff, opts SyncOptions) error {
