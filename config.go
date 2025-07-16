@@ -14,14 +14,16 @@ type ConfigFile struct {
 	ExtraInstallArgs   *[]string `toml:"extraInstallArgs"`
 	ExtraUninstallArgs *[]string `toml:"extraUninstallArgs"`
 	UninstallIgnore    *[]string `toml:"uninstallIgnore"`
+	Pager              *[]string `toml:"pager"`
 }
 
 type Config struct {
-	NoConfirm          bool     `toml:"noConfirm"`
-	AurHelper          string   `toml:"aurHelper"`
-	ExtraInstallArgs   []string `toml:"extraInstallArgs"`
-	ExtraUninstallArgs []string `toml:"extraUninstallArgs"`
-	UninstallIgnore    []string `toml:"uninstallIgnore"`
+	NoConfirm          bool      `toml:"noConfirm"`
+	AurHelper          string    `toml:"aurHelper"`
+	ExtraInstallArgs   []string  `toml:"extraInstallArgs"`
+	ExtraUninstallArgs []string  `toml:"extraUninstallArgs"`
+	UninstallIgnore    []string  `toml:"uninstallIgnore"`
+	Pager              *[]string `toml:"pager"`
 }
 
 const (
@@ -29,6 +31,9 @@ const (
 # noConfirm: add --noconfirm to pacman/aur commands
 # aurHelper: name of the AUR helper to use (e.g. yay, paru)
 # uninstallIgnore: list of packages that will never be uninstalled
+# extraInstallArgs: additional arguments to pass to install commands
+# extraUninstallArgs: additional arguments to pass to uninstall commands
+# pager: command to use for displaying output with their arguments (e.g. less, bat)
 
 `
 	configPerm = 0644
@@ -59,6 +64,7 @@ func (cf *ConfigFile) toConfig() *Config {
 		UninstallIgnore:    ptrValueOrDefault(cf.UninstallIgnore, defaultConfig.UninstallIgnore),
 		ExtraInstallArgs:   ptrValueOrDefault(cf.ExtraInstallArgs, []string{}),
 		ExtraUninstallArgs: ptrValueOrDefault(cf.ExtraUninstallArgs, []string{}),
+		Pager:              cf.Pager,
 	}
 }
 

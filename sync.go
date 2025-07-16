@@ -5,13 +5,9 @@ import (
 	"fmt"
 	"log"
 	"os"
-	"os/exec"
 	"slices"
 	"sort"
 	"strings"
-
-	"github.com/charmbracelet/lipgloss"
-	"github.com/charmbracelet/lipgloss/table"
 )
 
 type SyncOptions struct {
@@ -113,69 +109,14 @@ func printPackageChanges(diff PackageDiff, strict bool) {
 		return
 	}
 
-	white := lipgloss.Color("15")
-	green := lipgloss.Color("10")
-	red := lipgloss.Color("9")
-
-	headerStyle := lipgloss.NewStyle().
-		Foreground(white).
-		Padding(0, 1).
-		Bold(true)
-
-	installStyle := lipgloss.NewStyle().
-		Foreground(green).
-		Padding(0, 1).
-		Width(24)
-
-	removeStyle := lipgloss.NewStyle().
-		Foreground(red).
-		Padding(0, 1).
-		Width(24)
-
-	t := table.New().
-		Border(lipgloss.MarkdownBorder()).
-		BorderTop(false).
-		BorderBottom(false).
-		Headers("To Install", "To Remove").
-		StyleFunc(func(row, col int) lipgloss.Style {
-			if row == table.HeaderRow {
-				return headerStyle
-			}
-			if col == 0 {
-				return installStyle
-			}
-			return removeStyle
-		})
-
-	maxLen := len(diff.ToAdd)
-	if strict && len(diff.ToRemove) > maxLen {
-		maxLen = len(diff.ToRemove)
-	}
-
-	for i := 0; i < maxLen; i++ {
-		var addPkg, removePkg string
-		if i < len(diff.ToAdd) {
-			addPkg = diff.ToAdd[i]
-		}
-		if strict && i < len(diff.ToRemove) {
-			removePkg = diff.ToRemove[i]
-		}
-		t.Row(addPkg, removePkg)
-	}
+	t := buildDiffTable(diff, strict)
 
 	var out bytes.Buffer
 	out.WriteString("\n")
 	out.WriteString(t.String())
 	out.WriteString("\n")
 
-	cmd := exec.Command("less", "-FRX")
-	cmd.Stdin = &out
-	cmd.Stdout = os.Stdout
-	cmd.Stderr = os.Stderr
-
-	if err := cmd.Run(); err != nil {
-		fmt.Print(out.String())
-	}
+	displayWithOptionalPager(&out)
 }
 
 func applyPackageChanges(diff PackageDiff, opts SyncOptions) error {

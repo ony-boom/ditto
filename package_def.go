@@ -18,6 +18,8 @@ type Definition struct {
 	Host     *string
 }
 
+const FILE_EXTENSION = ".pkgs"
+
 func NewPackageDef() *PackageDef {
 	configPath, err := getConfigPath()
 	if err != nil {
@@ -39,7 +41,7 @@ func (pd *PackageDef) LoadAllDefinitions() ([]Definition, error) {
 			return err
 		}
 
-		if d.Type().IsRegular() && strings.HasSuffix(path, ".def") {
+		if d.Type().IsRegular() && strings.HasSuffix(path, FILE_EXTENSION) {
 			def, err := pd.parseDefFile(path)
 			if err != nil {
 				return err
@@ -87,7 +89,7 @@ func (pd *PackageDef) parseDefFile(file string) (Definition, error) {
 	parts := strings.Split(relPath, string(os.PathSeparator))
 	if len(parts) >= 2 && parts[0] == "hosts" {
 		if len(parts) == 2 {
-			hostVal := strings.TrimSuffix(parts[1], ".def")
+			hostVal := strings.TrimSuffix(parts[1], FILE_EXTENSION)
 			host = &hostVal
 		} else if len(parts) > 2 {
 			hostVal := parts[1]
