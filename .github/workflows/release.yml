@@ -36,5 +36,11 @@ jobs:
         uses: softprops/action-gh-release@v2
         with:
           files: dist/ditto-*
+          fail_on_unmatched_files: false
+          tag_name: ${{ github.ref_name }}
+          name: ${{ github.ref_name }}
+          draft: false
+          prerelease: false
+          update_existing: true
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
