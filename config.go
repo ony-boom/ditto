@@ -2,9 +2,11 @@ package main
 
 import (
 	"fmt"
+	"log"
 	"os"
 
 	"github.com/adrg/xdg"
+	"github.com/charmbracelet/log"
 	"github.com/pelletier/go-toml/v2"
 )
 
@@ -71,7 +73,7 @@ func (cf *ConfigFile) toConfig() *Config {
 func LoadConfig() *Config {
 	path, err := getConfigPath()
 	if err != nil {
-		panic(fmt.Errorf("could not find config file path: %w", err))
+		log.Fatalln(fmt.Errorf("could not find config file path: %w", err))
 	}
 
 	data, err := os.ReadFile(path)
@@ -80,7 +82,7 @@ func LoadConfig() *Config {
 		return &defaultConfig
 	}
 	if err != nil {
-		panic(fmt.Errorf("could not read config: %w", err))
+		log.Fatalln(fmt.Errorf("could not read config: %w", err))
 	}
 
 	raw, err := parseConfigFile(data)
@@ -95,11 +97,11 @@ func LoadConfig() *Config {
 func saveConfig(path string, cfg *Config) {
 	data, err := toml.Marshal(cfg)
 	if err != nil {
-		panic(fmt.Errorf("could not marshal config: %w", err))
+		log.Fatalln(fmt.Errorf("could not marshal config: %w", err))
 	}
 
 	dataWithComments := append([]byte(configDoc), data...)
 	if err := os.WriteFile(path, dataWithComments, configPerm); err != nil {
-		panic(fmt.Errorf("could not write config file: %w", err))
+		log.Fatalln(fmt.Errorf("could not write config file: %w", err))
 	}
 }
