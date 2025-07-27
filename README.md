@@ -1,79 +1,49 @@
-# Ditto (WIP)
+# Ditto
 
-**Declarative package sync for Arch-based systems.**
+A tiny tool to keep your `pacman` packages in sync using plain text files.
 
-Define all your `pacman` packages in simple `.pkgs` files and sync your system with one command — no more guessing or trying to remember what you installed last week.
-
-## Why not NixOS?
-
-Because you just want *one* thing: to declaratively manage packages without rewriting your OS.
-
-## Installation
-
-Install via `go install`:
+## Install
 
 ```sh
 go install github.com/ony-boom/ditto@latest
 ```
 
-## Usage
+## How it works
 
-Define your desired packages in plain text files inside:
+1. Throw some package names into `~/.config/ditto/packages/`.
+2. One package per line. `#` starts a comment because of course it does.
+3. Run:
 
-```
-~/.config/ditto/packages/
-```
+   ```sh
+   ditto sync
+   ```
 
-Each `.pkgs` file is just a list of package names, one per line. Lines starting with `#` are comments.
+   Ditto will install whatever’s missing and make you look like you have your life together.
 
-### Per-host definitions
+### Host-specific packages
 
-For machine-specific packages, create files under:
+Got multiple machines? Put their stuff in:
 
 ```
 ~/.config/ditto/packages/hosts/<hostname>.pkgs
 ```
 
-You can also organize them into subdirectories (e.g. `hosts/laptop/gaming.pkgs`).
+Organize into subfolders if you’re *that* person (`hosts/laptop/gaming.pkgs`).
 
+## Options
 
-## Syncing
+* `--strict` → yeets packages not in your list! (be careful with this one)
+* `--dry-run` → shows what would happen without touching anything (like commitment-free package management).
 
-Once your definitions are ready, run:
-
-```sh
-ditto sync
-```
-
-By default, Ditto will install any missing packages.  
-If you want to **remove** packages that are not listed (excluding ignored ones), use strict mode:
-
-```sh
-ditto sync --strict
-```
-
-You can preview changes with:
-
-```sh
-ditto sync --dry-run
-```
-
-
-## Notes
-
-- The config file is automatically created at `~/.config/ditto/config.toml` on first run.
-- You can specify an AUR helper and other options in the config.
-
-
-## Example `.pkgs` file
+## Example `.pkgs`
 
 ```text
-# Core tools
+# Tools I actually use
 git
 htop
 curl
 
-# Optional
+# Tools I *promise* I’ll learn someday
 neovim
 firefox
 ```
