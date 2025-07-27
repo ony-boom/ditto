@@ -31,9 +31,7 @@ func buildDiffTable(diff PackageDiff, strict bool) *table.Table {
 		Width(24)
 
 	t := table.New().
-		Border(lipgloss.MarkdownBorder()).
-		BorderTop(false).
-		BorderBottom(false).
+		Border(lipgloss.NormalBorder()).
 		Headers("To Install", "To Remove").
 		StyleFunc(func(row, col int) lipgloss.Style {
 			if row == table.HeaderRow {

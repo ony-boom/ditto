@@ -6,7 +6,6 @@ import (
 	"os"
 
 	"github.com/adrg/xdg"
-	"github.com/charmbracelet/log"
 	"github.com/pelletier/go-toml/v2"
 )
 

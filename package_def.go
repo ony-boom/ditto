@@ -55,50 +55,79 @@ func (pd *PackageDef) LoadAllDefinitions() ([]Definition, error) {
 }
 
 func (pd *PackageDef) parseDefFile(file string) (Definition, error) {
-	f, err := os.Open(file)
-	if err != nil {
-		return Definition{}, err
-	}
-	defer f.Close()
-
-	var pkgs []string
-
-	scanner := bufio.NewScanner(f)
-	for scanner.Scan() {
-		line := strings.TrimSpace(scanner.Text())
-		if line == "" || strings.HasPrefix(line, "#") {
-			continue
-		}
-		pkgs = append(pkgs, line)
-	}
-
-	if err := scanner.Err(); err != nil {
-		return Definition{}, err
-	}
-
-	if len(pkgs) == 0 {
-		log.Printf("warning: no packages defined in %s", file)
-	}
-
-	var host *string
-	relPath, err := filepath.Rel(pd.path, file)
+	pkgs, err := readPackagesFromFile(file)
 	if err != nil {
 		return Definition{}, err
 	}
 
-	parts := strings.Split(relPath, string(os.PathSeparator))
-	if len(parts) >= 2 && parts[0] == "hosts" {
-		if len(parts) == 2 {
-			hostVal := strings.TrimSuffix(parts[1], FILE_EXTENSION)
-			host = &hostVal
-		} else if len(parts) > 2 {
-			hostVal := parts[1]
-			host = &hostVal
-		}
+	host, err := inferHost(pd.path, file)
+	if err != nil {
+		return Definition{}, err
 	}
 
 	return Definition{
 		Packages: pkgs,
 		Host:     host,
 	}, nil
+}
+
+func readPackagesFromFile(file string) ([]string, error) {
+	f, err := os.Open(file)
+	if err != nil {
+		return nil, err
+	}
+	defer f.Close()
+
+	var pkgs []string
+	scanner := bufio.NewScanner(f)
+
+	for scanner.Scan() {
+		line := parseLine(scanner.Text())
+		if line != "" {
+			pkgs = append(pkgs, line)
+		}
+	}
+
+	if err := scanner.Err(); err != nil {
+		return nil, err
+	}
+
+	if len(pkgs) == 0 {
+		log.Printf("warning: no packages defined in %s", file)
+	}
+
+	return pkgs, nil
+}
+
+// parseLine trims whitespace and removes comments from a single line.
+func parseLine(line string) string {
+	line = strings.TrimSpace(line)
+	if line == "" || strings.HasPrefix(line, "#") {
+		return ""
+	}
+	if idx := strings.Index(line, "#"); idx != -1 {
+		line = strings.TrimSpace(line[:idx])
+	}
+	return line
+}
+
+// inferHost extracts the host name based on the file's relative path.
+func inferHost(basePath, file string) (*string, error) {
+	relPath, err := filepath.Rel(basePath, file)
+	if err != nil {
+		return nil, err
+	}
+
+	parts := strings.Split(relPath, string(os.PathSeparator))
+	if len(parts) >= 2 && parts[0] == "hosts" {
+		var hostVal string
+		if len(parts) == 2 {
+			hostVal = strings.TrimSuffix(parts[1], FILE_EXTENSION)
+		} else {
+			hostVal = parts[1]
+		}
+		return &hostVal, nil
+	}
+
+	return nil, nil
 }
