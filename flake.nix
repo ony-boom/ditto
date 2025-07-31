@@ -20,7 +20,7 @@
             src = self;
             pname = "ditto";
             version = "0.2.0";
-            vendorHash = "sha256-AM4ZdnMRSBDEqqMDFtIkMAkaaSWkaEjZdV6mFsSH9y8=";
+            vendorHash = "sha256-7GksIVg5ZoYhrpeTBU6mZci4Ox3i3swKTxzJWBOhf0A=";
           };
         };
 
