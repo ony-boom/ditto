@@ -65,7 +65,7 @@ You can pass additional arguments to pacman for installs and removals.
 * Sync with a full system upgrade and remove unused packages:
 
   ```sh
-  ditto sync -- -Syu --needed :: -Rns
+  ditto sync --strict -- -Syu --needed :: -Rns
   ```
 
 ## Example `.pkgs`
