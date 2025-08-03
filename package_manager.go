@@ -60,9 +60,9 @@ func (p *Pacman) isAurHelper() bool {
 	return p.commandStr != "pacman"
 }
 
-func (p *Pacman) Install(pkgs []string) error {
+func (p *Pacman) Install(pkgs []string, extraArgs ...string) error {
 	args := []string{"-S"}
-
+	args = append(args, extraArgs...)
 	args = append(args, cfg.ExtraInstallArgs...)
 
 	if cfg.NoConfirm {
@@ -72,7 +72,6 @@ func (p *Pacman) Install(pkgs []string) error {
 	args = append(args, pkgs...)
 
 	cmd := p.exec(args)
-
 	cmd.Stdout = os.Stdout
 	cmd.Stdin = os.Stdin
 	cmd.Stderr = os.Stderr
@@ -84,14 +83,13 @@ func (p *Pacman) Install(pkgs []string) error {
 	return nil
 }
 
-func (p *Pacman) Remove(pkgs []string) error {
+func (p *Pacman) Remove(pkgs []string, extraArgs ...string) error {
 	args := []string{"-R"}
-
+	args = append(args, extraArgs...)
 	args = append(args, cfg.ExtraUninstallArgs...)
 	args = append(args, pkgs...)
 
 	cmd := p.exec(args)
-
 	cmd.Stdout = os.Stdout
 	cmd.Stdin = os.Stdin
 	cmd.Stderr = os.Stderr

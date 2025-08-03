@@ -2,6 +2,7 @@ package main
 
 import (
 	"context"
+	"fmt"
 	"os"
 
 	"github.com/urfave/cli/v3"
@@ -27,29 +28,58 @@ By the way, just running 'ditto' will create the config file at <XDG_CONFIG_HOME
 `,
 		Commands: []*cli.Command{
 			{
-				Name:    "sync",
-				Usage:   "Synchronize installed packages with your desired package list",
-				Aliases: []string{"s"},
+				Name:      "sync",
+				Usage:     "Synchronize installed packages with your desired package list",
+				Aliases:   []string{"s"},
+				ArgsUsage: "[pacman install args...] :: [pacman remove args...]",
 				Description: `Sync compares your desired package list with what's currently installed.
-By default, it will only install missing packages.
+By default, it only installs missing packages.
 
-You can enable strict mode to remove all packages not listed in your config (excluding ignored ones).`,
+You can pass additional pacman arguments after '--'. 
+Use '::' to separate install args from remove args.
+
+Examples:
+  ditto sync -- -Syu --needed
+  ditto sync -- -Syu --needed :: -Rns`,
 				Flags: []cli.Flag{
 					&cli.BoolFlag{
 						Name:    "dry-run",
 						Aliases: []string{"n"},
-						Usage:   "Simulate the sync process without making changes. Shows what would be installed or removed.",
+						Usage:   "Simulate the sync process without making changes.",
 					},
 					&cli.BoolFlag{
 						Name:    "strict",
 						Aliases: []string{"x"},
-						Usage:   "Enable strict mode: remove packages that are not in the desired list (excluding ignored ones).",
+						Usage:   "Enable strict mode: remove packages not in the desired list.",
 					},
 				},
 				Action: func(ctx context.Context, cmd *cli.Command) error {
+					args := cmd.Args().Slice()
+
+					var installArgs, removeArgs []string
+					sepIndex := -1
+					for i, a := range args {
+						if a == "::" {
+							sepIndex = i
+							break
+						}
+					}
+
+					if sepIndex != -1 {
+						installArgs = args[:sepIndex]
+						removeArgs = args[sepIndex+1:]
+						if !cmd.Bool("strict") && len(removeArgs) > 0 {
+							fmt.Fprintln(os.Stderr, "Warning: remove args provided but --strict is disabled, ignoring them.")
+						}
+					} else {
+						installArgs = args
+					}
+
 					return Sync(SyncOptions{
-						Strict: cmd.Bool("strict"),
-						DryRun: cmd.Bool("dry-run"),
+						Strict:      cmd.Bool("strict"),
+						DryRun:      cmd.Bool("dry-run"),
+						InstallArgs: installArgs,
+						RemoveArgs:  removeArgs,
 					})
 				},
 			},

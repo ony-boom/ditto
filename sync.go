@@ -11,8 +11,10 @@ import (
 )
 
 type SyncOptions struct {
-	DryRun bool
-	Strict bool
+	DryRun      bool
+	Strict      bool
+	InstallArgs []string
+	RemoveArgs  []string
 }
 
 type PackageDiff struct {
@@ -135,13 +137,13 @@ func applyPackageChanges(diff PackageDiff, opts SyncOptions) error {
 	}
 
 	if len(diff.ToAdd) > 0 {
-		if err := pacman.Install(diff.ToAdd); err != nil {
+		if err := pacman.Install(diff.ToAdd, opts.InstallArgs...); err != nil {
 			return fmt.Errorf("install failed: %w", err)
 		}
 	}
 
 	if len(diff.ToRemove) > 0 && opts.Strict {
-		if err := pacman.Remove(diff.ToRemove); err != nil {
+		if err := pacman.Remove(diff.ToRemove, opts.RemoveArgs...); err != nil {
 			return fmt.Errorf("remove failed: %w", err)
 		}
 	}

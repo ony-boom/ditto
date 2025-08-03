@@ -35,6 +35,39 @@ Organize into subfolders if you’re *that* person (`hosts/laptop/gaming.pkgs`).
 * `--strict` → yeets packages not in your list! (be careful with this one)
 * `--dry-run` → shows what would happen without touching anything (like commitment-free package management).
 
+## Passing extra pacman arguments
+
+You can pass additional arguments to pacman for installs and removals.
+
+* **Install-only:** everything after `--` is passed to `pacman -S`:
+
+  ```sh
+  ditto sync -- -Syu --needed
+  ```
+
+* **Install + remove:** use `::` to separate install args from remove args:
+
+  ```sh
+  ditto sync -- -Syu --needed :: -Rns
+  ```
+
+> **Note:** Remove arguments are only used when `--strict` is enabled, since that's the only mode that removes packages.
+> If you provide `::` without `--strict`, Ditto will warn you and ignore the remove args.
+
+### Examples:
+
+* Dry run strict sync with pacman verbose output:
+
+  ```sh
+  ditto sync --dry-run --strict -- -v
+  ```
+
+* Sync with a full system upgrade and remove unused packages:
+
+  ```sh
+  ditto sync -- -Syu --needed :: -Rns
+  ```
+
 ## Example `.pkgs`
 
 ```text
