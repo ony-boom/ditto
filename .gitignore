@@ -1,2 +1,2 @@
-ditto # binary result of go build
-result/ # nix build result dir
+ditto
+result
