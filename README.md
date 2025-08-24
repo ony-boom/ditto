@@ -1,6 +1,6 @@
 # Ditto
 
-A tiny tool to keep your `pacman` packages in sync using plain text files.
+A tiny (70% vibe-coded) tool to keep your `pacman` packages in sync using plain text files.
 
 ## Install
 

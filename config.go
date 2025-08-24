@@ -40,14 +40,11 @@ const (
 	configPerm = 0644
 )
 
-var (
-	defaultArgs   = []string{"-S"}
-	defaultConfig = Config{
-		NoConfirm:       true,
-		AurHelper:       "",
-		UninstallIgnore: nil,
-	}
-)
+var defaultConfig = Config{
+	NoConfirm:       true,
+	AurHelper:       "",
+	UninstallIgnore: nil,
+}
 
 func getConfigPath() (string, error) {
 	return xdg.ConfigFile("ditto/config.toml")
