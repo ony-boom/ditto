@@ -10,13 +10,8 @@ permissions:
 
 jobs:
   build:
-    name: Build binaries
+    name: Build Linux binary
     runs-on: ubuntu-latest
-
-    strategy:
-      matrix:
-        goos: [linux, windows, darwin]
-        goarch: [amd64]
 
     steps:
       - name: Checkout code
@@ -27,15 +22,15 @@ jobs:
         with:
           go-version-file: go.mod
 
-      - name: Build binary
+      - name: Build Linux binary
         run: |
           mkdir -p dist
-          GOOS=${{ matrix.goos }} GOARCH=${{ matrix.goarch }} go build -o dist/ditto-${{ matrix.goos }}-${{ matrix.goarch }}
+          GOOS=linux GOARCH=amd64 go build -o dist/ditto-linux-amd64
 
-      - name: Upload binaries to release
+      - name: Upload binary to release
         uses: softprops/action-gh-release@v2
         with:
-          files: dist/ditto-*
+          files: dist/ditto-linux-amd64
           fail_on_unmatched_files: false
           tag_name: ${{ github.ref_name }}
           name: ${{ github.ref_name }}
